@@ -28,7 +28,8 @@ neverallow {
     -init
     -ueventd
     -charger
-    } vendor_persist_type: { dir file } *;
+    -vold
+} vendor_persist_type: { dir file } *;
 
 allow { domain - coredomain charger} mnt_vendor_file:lnk_file r_file_perms;
 
