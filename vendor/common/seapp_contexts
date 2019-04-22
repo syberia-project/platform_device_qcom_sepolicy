@@ -28,7 +28,3 @@ user=system seinfo=platform name=com.qualcomm.qti.perfdump domain=perfdump_app t
 
 #Add new domain for power off alarm app
 user=system seinfo=platform name=com.qualcomm.qti.poweroffalarm domain=poweroffalarm_app type=system_app_data_file
-
-#Add new domain for DataServices
-# Domain for CNEService , uceShimService and other connectivity services
-user=radio seinfo=platform name=.dataservices domain=dataservice_app type=radio_data_file
