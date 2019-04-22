@@ -10,6 +10,12 @@ type qmuxd_socket, file_type;
 #Define the netmgrd socket type
 type netmgrd_socket, file_type;
 
+#Define the qti socket type
+type dataqti_socket, file_type;
+
+#Define the adpl socket type
+type dataadpl_socket, file_type;
+
 #QTI file types
 type vendor_qti_data_file, file_type, data_file_type;
 
@@ -108,7 +114,7 @@ type sysfs_poweron_alarm, sysfs_type, fs_type;
 type sysfs_mpdecision, fs_type, sysfs_type;
 type sysfs_rqstats, fs_type, sysfs_type;
 type sysfs_cpu_online, fs_type, sysfs_type;
-type mpctl_socket, file_type, mlstrustedobject;
+type mpctl_socket, file_type, data_file_type, mlstrustedobject;
 type mpctl_data_file, file_type, data_file_type;
 
 #Define the files used by lm
@@ -251,6 +257,8 @@ type nfc_vendor_data_file, file_type, data_file_type;
 # kgsl file type for sysfs access
 type sysfs_kgsl, sysfs_type, fs_type;
 type sysfs_kgsl_proc, sysfs_type, fs_type;
+type sysfs_kgsl_gpuclk, sysfs_type, fs_type;
+
 # kgsl snapshot file type for sysfs access
 type sysfs_kgsl_snapshot, sysfs_type, fs_type;
 
@@ -268,7 +276,7 @@ type sysfs_laser, fs_type, sysfs_type;
 
 # QDMA data files
 type vendor_qdma_data_file, file_type, data_file_type;
-type qdma_socket, file_type;
+type qdma_socket, file_type, mlstrustedobject;
 
 # path to debugfs use this whic should be only used
 # in debug builds
@@ -372,5 +380,8 @@ type time_data_file, file_type, data_file_type, core_data_file_type;
 #qvrservice sysfs files
 type sysfs_qvr_external_sensor, sysfs_type, fs_type;
 
-#kgsl
-type kgsl_debugfs, debugfs_type, fs_type;
+# vservices sysfs files
+type sysfs_vservices, sysfs_type, fs_type;
+
+# rmnet module files
+type sysfs_rmnet, fs_type, sysfs_type;

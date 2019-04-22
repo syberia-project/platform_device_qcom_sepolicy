@@ -83,6 +83,8 @@
 /dev/qg_battery                                 u:object_r:qg_device:s0
 /dev/ipa_odl_ctl                                u:object_r:ipa_dev:s0
 /dev/ipa_adpl                                   u:object_r:ipa_dev:s0
+/dev/qvr_external_sensor_ioctl                  u:object_r:qvr_external_sensor_device:s0
+
 ###################################
 # Dev block nodes
 #
@@ -109,6 +111,8 @@
 /dev/socket/qmux_radio(/.*)?                    u:object_r:qmuxd_socket:s0
 /dev/socket/qmux_nfc(/.*)?                      u:object_r:qmuxd_socket:s0
 /dev/socket/netmgr(/.*)?                        u:object_r:netmgrd_socket:s0
+/dev/socket/dataqti(/.*)?                       u:object_r:dataqti_socket:s0
+/dev/socket/dataadpl(/.*)?                      u:object_r:dataadpl_socket:s0
 /dev/socket/sensor_ctl_socket                   u:object_r:sensors_socket:s0
 /dev/socket/cnd                                 u:object_r:cnd_socket:s0
 /dev/socket/nims                                u:object_r:cnd_socket:s0
@@ -166,11 +170,13 @@
 /(vendor|system/vendor)/bin/irsc_util                           u:object_r:irsc_util_exec:s0
 /(vendor|system/vendor)/bin/qrtr-cfg                            u:object_r:qrtr_exec:s0
 /(vendor|system/vendor)/bin/qrtr-ns                             u:object_r:qrtr_exec:s0
-/(vendor|system/vendor)/bin/init\.qcom\.sh              u:object_r:qti_init_shell_exec:s0
+/(vendor|system/vendor)/bin/init\.qcom\.sh               u:object_r:qti_init_shell_exec:s0
+/(vendor|system/vendor)/bin/init\.qti\.manifest_sku\.sh  u:object_r:qti-manifest_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.class_core\.sh  u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.bt\.sh          u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.early_boot\.sh  u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.class_main\.sh        u:object_r:qti_init_shell_exec:s0
+/(vendor|system/vendor)/bin/init\.class_late\.sh        u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.post_boot\.sh   u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.sensors\.sh     u:object_r:qti_init_shell_exec:s0
 /(vendor|system/vendor)/bin/init\.qcom\.usb\.sh         u:object_r:qti_init_shell_exec:s0
@@ -277,6 +283,7 @@
 /(vendor|system/vendor)/bin/adpl                u:object_r:adpl_exec:s0
 /(vendor|system/vendor)/bin/wcnss_service       u:object_r:wcnss_service_exec:s0
 /(vendor|system/vendor)/bin/hbtp_daemon         u:object_r:hbtp_exec:s0
+/(vendor|system/vendor)/bin/sarproxymgr         u:object_r:sarproxymgr_exec:s0
 /(vendor|system/vendor)/bin/touch_fusion        u:object_r:touchfusion_exec:s0
 /(vendor|system/vendor)/bin/seemp_healthd       u:object_r:seemp_health_daemon_exec:s0
 /(vendor|system/vendor)/bin/sapd                                u:object_r:sapd_exec:s0
@@ -324,13 +331,16 @@
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.qdutils_disp@1\.0-service-qti u:object_r:hal_qdutils_disp_qti_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.sensorscalibrate@1\.0-service u:object_r:hal_sensorscalibrate_qti_default_exec:s0
 /(vendor|system/vendor)/bin/power_off_alarm        u:object_r:power_off_alarm_exec:s0
-/vendor/bin/hw/vendor\.qti\.hardware\.vibrator@1\.[0-2]-service    u:object_r:hal_vibrator_default_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.vibrator@1\.[0-2]-service    u:object_r:hal_vibrator_default_exec:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.usb\.gadget@1\.0-service-qti u:object_r:hal_usb_gadget_qti_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.scve\.panorama@1\.0-service    u:object_r:vendor_scve_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.scve\.objecttracker@1\.0-service    u:object_r:vendor_scve_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.mlshal@1\.0-service       u:object_r:hal_mirrorlink_qti_exec:s0
 /(vendor|system/vendor)/bin/hdcp_srm               u:object_r:hdcp_srm_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.qti\.power\.pasrmanager\@1\.0-service u:object_r:hal_pasrmanager_qti_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.seccam@1\.0-service-qti u:object_r:hal_seccam_qti_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.cvp@1\.0-service u:object_r:vendor_cvp_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power@1\.2-service          u:object_r:hal_power_default_exec:s0
 
 ###################################
 # sysfs files
@@ -339,36 +349,37 @@
 /sys/class/thermal(/.*)?                                            u:object_r:sysfs_thermal:s0
 /sys/class/sensors(/.*)?                                            u:object_r:sysfs_sensors:s0
 /sys/class/uio(/.*)?                                                u:object_r:sysfs_uio:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+(/.*)?        u:object_r:sysfs_uio_file:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+/maps/map[0-9]+(/.*)?    u:object_r:sysfs_uio_file:s0
-/sys/devices(/platform)?/soc.0/[a-z0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+(/.*)?        u:object_r:sysfs_uio_file:s0
-/sys/devices(/platform)?/soc.0/[a-z0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+/maps/map[0-9]+(/.*)?    u:object_r:sysfs_uio_file:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+(/.*)?        u:object_r:sysfs_uio_file:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+/maps/map[0-9]+(/.*)?    u:object_r:sysfs_uio_file:s0
+/sys/devices(/platform)?/soc.0/[a-f0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+(/.*)?        u:object_r:sysfs_uio_file:s0
+/sys/devices(/platform)?/soc.0/[a-f0-9]+.qcom,rmtfs_sharedmem/uio/uio[0-9]+/maps/map[0-9]+(/.*)?    u:object_r:sysfs_uio_file:s0
 /sys/devices/[^/]+bcl[^/]+(/.*)?                                    u:object_r:sysfs_thermal:s0
 /sys/devices/f9200000.*/power_supply/usb(/.*)?                      u:object_r:sysfs_usb_supply:s0
 /sys/devices/msm_dwc3/power_supply/usb(/.*)?                        u:object_r:sysfs_usb_supply:s0
 /sys/devices/msm_otg/power_supply/usb(/.*)?                         u:object_r:sysfs_usb_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/usb(/.*)?        u:object_r:sysfs_usb_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/pc_port(/.*)?    u:object_r:sysfs_usb_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.i2c/i2c-[0-9]+/[0-9]+-[0-9]+/[a-z0-9]+.i2c:qcom,[a-z0-9]+@[0-9]:qcom,smb[0-9]+-charger@[0-9]+/power_supply/parallel(/.*)?    u:object_r:sysfs_usb_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,usb-pdphy@[0-9]+/usbpd/usbpd[0-9](/.*)?    u:object_r:sysfs_usbpd_device:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/usb(/.*)?        u:object_r:sysfs_usb_supply:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/pc_port(/.*)?    u:object_r:sysfs_usb_supply:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.i2c/i2c-[0-9]+/[0-9]+-[0-9]+/[a-z0-9]+.i2c:qcom,[a-z0-9]+@[0-9]:qcom,smb[0-9]+-charger@[0-9]+/power_supply/parallel(/.*)?    u:object_r:sysfs_usb_supply:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-f0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,usb-pdphy@[0-9]+/usbpd/usbpd[0-9](/.*)?    u:object_r:sysfs_usbpd_device:s0
 /sys/devices/platform/battery_current_limit                         u:object_r:sysfs_thermal:s0
 /sys/devices/qpnp-charger.*/power_supply/battery(/.*)?              u:object_r:sysfs_battery_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/battery(/.*)?    u:object_r:sysfs_battery_supply:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qpnp,fg/power_supply/bms(/.*)?               u:object_r:sysfs_battery_supply:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,qpnp-smb2/power_supply/battery(/.*)?    u:object_r:sysfs_battery_supply:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,spmi/spmi-[0-9]/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qpnp,fg/power_supply/bms(/.*)?               u:object_r:sysfs_battery_supply:s0
 /sys/class/qcom-battery(/.*)?              u:object_r:sysfs_battery_supply:s0
 /sys/class/charge_pump(/.*)?               u:object_r:sysfs_battery_supply:s0
 /sys/devices(/platform)?/soc/qpnp-linear-charger-[a-z0-9]+/power_supply/battery(/.*)?    u:object_r:sysfs_battery_supply:s0
-/sys/devices(/platform)?/soc/qpnp-vm-bms-[a-z0-9]+/power_supply/bms(/.*)?    u:object_r:sysfs_battery_supply:s0
-/sys/devices/soc/qpnp-smbcharger-[a-z0-9]+/power_supply/battery(/.*)?        u:object_r:sysfs_battery_supply:s0
-/sys/devices/soc/qpnp-fg-[a-z0-9]+/power_supply/bms(/.*)?           u:object_r:sysfs_battery_supply:s0
-/sys/devices/soc/qpnp-smbcharger-[a-z0-9]+/power_supply/dc(/.*)?    u:object_r:sysfs_battery_supply:s0
-/sys/devices/soc/[a-z0-9]+.i2c/i2c-[0-9]/[0-9]-[a-z0-9]+/power_supply/parallel(/.*)?    u:object_r:sysfs_battery_supply:s0
-/sys/devices/soc/[a-z0-9]+.ssusb/power_supply/usb(/.*)?             u:object_r:sysfs_usb_supply:s0
+/sys/devices(/platform)?/soc/qpnp-vm-bms-[a-f0-9]+/power_supply/bms(/.*)?    u:object_r:sysfs_battery_supply:s0
+/sys/devices/soc/qpnp-smbcharger-[a-f0-9]+/power_supply/battery(/.*)?        u:object_r:sysfs_battery_supply:s0
+/sys/devices/soc/qpnp-fg-[a-f0-9]+/power_supply/bms(/.*)?           u:object_r:sysfs_battery_supply:s0
+/sys/devices/soc/qpnp-smbcharger-[a-f0-9]+/power_supply/dc(/.*)?    u:object_r:sysfs_battery_supply:s0
+/sys/devices/soc/[a-f0-9]+.i2c/i2c-[0-9]/[0-9]-[a-f0-9]+/power_supply/parallel(/.*)?    u:object_r:sysfs_battery_supply:s0
+/sys/devices/soc/[a-f0-9]+.ssusb/power_supply/usb(/.*)?             u:object_r:sysfs_usb_supply:s0
 /sys/devices/soc/qpnp-vadc-[0-9]+(/.*)?                             u:object_r:sysfs_vadc_dev:s0
 /sys/bus/spmi/devices(/.*)?                                         u:object_r:sysfs_spmi_dev:s0
 /sys/kernel/irq_helper/irq_blacklist_on                             u:object_r:sysfs_irqbalance:s0
 /sys/devices/virtual/graphics/fb([0-3])+/idle_time                  u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/dynamic_fps                u:object_r:sysfs_graphics:s0
+/sys/devices/virtual/graphics/fb([0-3])+/dynamic_bitclk             u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/product_description        u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/vendor_name                u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/hdcp/tp                    u:object_r:sysfs_graphics:s0
@@ -389,6 +400,7 @@
 /sys/devices/virtual/graphics/fb([0-3])+/res_info                   u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/s3d_mode                   u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/msm_fb_panel_info          u:object_r:sysfs_graphics:s0
+/sys/devices/virtual/graphics/fb([0-3])+/supported_bitclk           u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/msm_fb_type                u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/msm_fb_split               u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/graphics/fb([0-3])+/show_blank_event           u:object_r:sysfs_graphics:s0
@@ -428,8 +440,8 @@
 /sys/devices/platform/vfb.([0-3])+/graphics/fb([0-3])+/modes        u:object_r:sysfs_graphics:s0
 /sys/devices/platform/vfb.([0-3])+/graphics/fb([0-3])+/mode         u:object_r:sysfs_graphics:s0
 /sys/module/drm/parameters/vblankoffdelay                           u:object_r:sysfs_graphics:s0
-/sys/devices/platform/soc/[a-z0-9]+.qcom,mdss_mdp/drm/card([0-3])+/card([0-3])+-DSI-1/modes u:object_r:sysfs_graphics:s0
-/sys/devices/platform/soc/[a-z0-9]+.qcom,mdss_mdp/drm/card([0-3])+/card([0-3])+-DSI-1/status u:object_r:sysfs_graphics:s0
+/sys/devices/platform/soc/[a-f0-9]+.qcom,mdss_mdp/drm/card([0-3])+/card([0-3])+-DSI-1/modes u:object_r:sysfs_graphics:s0
+/sys/devices/platform/soc/[a-f0-9]+.qcom,mdss_mdp/drm/card([0-3])+/card([0-3])+-DSI-1/status u:object_r:sysfs_graphics:s0
 
 /sys/devices/virtual/workqueue/kgsl-events/cpumask                  u:object_r:sysfs_kgsl:s0
 /sys/devices/virtual/workqueue/kgsl-events/nice                     u:object_r:sysfs_kgsl:s0
@@ -438,22 +450,24 @@
 /sys/class/graphics/fb([0-3])+/mdp/caps                             u:object_r:sysfs_graphics:s0
 /sys/class/graphics/fb([0-3])+/ad                                   u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/hdcp/msm_hdcp/min_level_change                 u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[0-9a-z]+.qcom,spmi/spmi-[0-9]+/spmi[0-9]+-[0-9]+/[0-9a-z]+.qcom,spmi:qcom,pmi[0-9]+@[0-9]+:qcom,leds@[a-z0-9]+(/.*)? u:object_r:sysfs_graphics:s0
-/sys/devices/platform/soc/[a-z0-9]+.qcom,spmi/spmi-0/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,haptics@c000/leds/vibrator(/.*)?   u:object_r:sysfs_leds:s0
+/sys/devices(/platform)?/soc/[0-9a-f]+.qcom,spmi/spmi-[0-9]+/spmi[0-9]+-[0-9]+/[0-9a-z]+.qcom,spmi:qcom,pmi[0-9]+@[0-9]+:qcom,leds@[a-z0-9]+(/.*)? u:object_r:sysfs_graphics:s0
+/sys/devices/platform/soc/[a-f0-9]+.qcom,spmi/spmi-0/spmi0-0[0-9]/[a-z0-9]+.qcom,spmi:qcom,[a-z0-9]+@[0-9]:qcom,haptics@c000/leds/vibrator(/.*)?   u:object_r:sysfs_leds:s0
 /sys/devices/platform/soc/ae00000.qcom,mdss_mdp/backlight(/.*)?     u:object_r:sysfs_graphics:s0
 /sys/devices/virtual/switch/hdmi(/.*)?                              u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_mdp/[a-z0-9]+.qcom,mdss_mdp:qcom,mdss_fb_primary/leds/lcd-backlight(/.*)?   u:object_r:sysfs_graphics:s0
-/sys/devices/soc.0/[a-z0-9]+.qcom,mdss_mdp/qcom,mdss_fb_primary.[a-z0-9]+/leds/lcd-backlight(/.*)?   u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_mdp/caps           u:object_r:sysfs_graphics:s0
-/sys/devices/soc/[a-z0-9]+.qcom,mdss_mdp/bw_mode_bitmap             u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_mdp/bw_mode_bitmap             u:object_r:sysfs_graphics:s0
-/sys/devices/soc.0/[a-z0-9]+.qcom,mdss_mdp/bw_mode_bitmap            u:object_r:sysfs_graphics:s0
-/sys/devices/soc.0/[a-z0-9]+.qcom,mdss_mdp/caps                      u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_cam/video4linux/video[0-33]/name(/.*)?   u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_rotator/video4linux/video[0-33]/name(/.*)?   u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,mdss_rotator/caps       u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,vidc/video4linux/video[0-33]/name(/.*)?   u:object_r:sysfs_graphics:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+.qcom,cci/[a-z0-9]+.qcom,cci:qcom,camera@[0-2]/video4linux/video[0-33]/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_mdp/[a-f0-9]+.qcom,mdss_mdp:qcom,mdss_fb_primary/leds/lcd-backlight(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices/soc.0/[a-z0-9]+.qcom,mdss_mdp/qcom,mdss_fb_primary.+[a-z0-9]/leds/lcd-backlight(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_mdp/caps           u:object_r:sysfs_graphics:s0
+/sys/devices/soc/[a-f0-9]+.qcom,mdss_mdp/bw_mode_bitmap             u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_mdp/bw_mode_bitmap             u:object_r:sysfs_graphics:s0
+/sys/devices/soc.0/[a-f0-9]+.qcom,mdss_mdp/bw_mode_bitmap            u:object_r:sysfs_graphics:s0
+/sys/devices/soc.0/[a-f0-9]+.qcom,mdss_mdp/caps                      u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,fd/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,msm-cam/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_cam/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_rotator/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,mdss_rotator/caps       u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,vidc/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,cci/[a-z0-9]+.qcom,cci:qcom,camera@[0-2]/video4linux/video[0-9]+/name(/.*)?   u:object_r:sysfs_graphics:s0
 /sys/bus/platform/drivers/xhci_msm_hsic(/.*)?                       u:object_r:sysfs_hsic:s0
 /sys/devices/msm_hsic_host/host_ready                               u:object_r:sysfs_hsic_host_rdy:s0
 /sys/bus/esoc(/.*)?                                                 u:object_r:sysfs_esoc:s0
@@ -475,8 +489,6 @@
 /sys/devices/bt_qca6174/extldo                                      u:object_r:sysfs_bluetooth_writable:s0
 /sys/devices/bt_qca6174/rfkill/rfkill0/state                        u:object_r:sysfs_bluetooth_writable:s0
 /sys/module/diagchar(/.*)?                                          u:object_r:sysfs_diag:s0
-/sys/devices/virtual/xt_hardidletimer/timers(/.*)?                  u:object_r:sysfs_data:s0
-/sys/devices/virtual/xt_idletimer/timers(/.*)?                      u:object_r:sysfs_data:s0
 
 /sys/devices(/platform)?/soc/soc:qcom,gpubw/devfreq/soc:qcom,gpubw(/.*)? u:object_r:sysfs_devfreq:s0
 /sys/devices(/platform)?/soc/soc:qcom,llccbw/devfreq/soc:qcom,llccbw(/.*)? u:object_r:sysfs_devfreq:s0
@@ -486,6 +498,7 @@
 /sys/devices(/platform)?/soc/[a-f0-9]+.qcom,kgsl-3d0/kgsl/kgsl-3d0(/.*)? u:object_r:sysfs_kgsl:s0
 /sys/devices(/platform)?/soc/[a-f0-9]+.qcom,kgsl-3d0/devfreq/[a-f0-9]+.qcom,kgsl-3d0(/.*)? u:object_r:sysfs_kgsl:s0
 /sys/devices(/platform)?/soc/[a-f0-9]+.qcom,kgsl-3d0/kgsl/kgsl-3d0/snapshot(/.*)? u:object_r:sysfs_kgsl_snapshot:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpuclk u:object_r:sysfs_kgsl_gpuclk:s0
 
 /sys/devices(/platform)?/soc(.[0-9])?/[a-f0-9]+.sdhci/mmc_host/mmc0/clk_scaling(/.*)? u:object_r:sysfs_mmc_host:s0
 /sys/devices(/platform)?/soc/[a-f0-9]+.sdhci/mmc_host/mmc[0-9]/mmc0:[0-9]+/block/mmcblk[0-9]/bdi/read_ahead_kb u:object_r:sysfs_mmc_host:s0
@@ -500,11 +513,11 @@
 /sys/kernel/mm/ksm(/.*)?                                            u:object_r:sysfs_memory:s0
 /sys/devices/virtual/input/input[0-9]+/do_flush                   u:object_r:sysfs_laser:s0
 /sys/devices/virtual/input/input[0-9]+/enable_ps_sensor           u:object_r:sysfs_laser:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/fst_link_loss            u:object_r:sysfs_wigig:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/thermal_throttling       u:object_r:sysfs_wigig:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/snr_thresh               u:object_r:sysfs_wigig:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/net/wigig0/queues/rx-0/rps_cpus  u:object_r:sysfs_wigig:s0
-/sys/devices(/platform)?/soc/[a-z0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/net/wigig0/gro_flush_timeout     u:object_r:sysfs_wigig:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/fst_link_loss            u:object_r:sysfs_wigig:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/thermal_throttling       u:object_r:sysfs_wigig:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/wil6210/snr_thresh               u:object_r:sysfs_wigig:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/net/wigig0/queues/rx-0/rps_cpus  u:object_r:sysfs_wigig:s0
+/sys/devices(/platform)?/soc/[a-f0-9]+\.qcom,pcie/pci[0-9:]+/[0-9:\.]+/[0-9:\.]+/net/wigig0/gro_flush_timeout     u:object_r:sysfs_wigig:s0
 /sys/module/msm_core(/.*)?                                          u:object_r:sysfs_ea:s0
 /sys/module/lpm_stats(/.*)?                                         u:object_r:sysfs_msm_stats:s0
 /sys/module/lpm_levels(/.*)?                                        u:object_r:sysfs_msm_power:s0
@@ -517,6 +530,7 @@
 /sys/module/vmpressure(/.*)?                                        u:object_r:sysfs_vmpressure:s0
 /sys/board_properties/virtualkeys.synaptics_dsx                     u:object_r:sysfs_virtualkeys:s0
 /sys/board_properties/virtualkeys.ft5x06_ts                         u:object_r:sysfs_virtualkeys:s0
+/sys/vservices(/.*)?                                                u:object_r:sysfs_vservices:s0
 
 ###################################
 # data files
@@ -567,6 +581,8 @@
 /data/vendor/ramdump(/.*)?                                          u:object_r:vendor_ramdump_data_file:s0
 /data/vendor/mdmhelperdata(/.*)?                                    u:object_r:vendor_mdmhelperdata_data_file:s0
 /sys/kernel/debug/ipc_logging(/.*)?                                 u:object_r:qti_debugfs:s0
+/sys/kernel/debug/clk(/.*)?                                         u:object_r:qti_debugfs:s0
+/sys/kernel/debug/regulator(/.*)?                                   u:object_r:qti_debugfs:s0
 /data/vendor/misc/qsee(/.*)?                                        u:object_r:data_qsee_file:s0
 /data/vendor/tui(/.*)?                                              u:object_r:vendor_tui_data_file:s0
 /data/vendor/nnhal(/.*)?                                            u:object_r:hal_neuralnetworks_data_file:s0
@@ -625,7 +641,7 @@
 ###################################
 # etc files
 #
-/vendor/etc/hbtp/*                                                  u:object_r:hbtp_cfg_file:s0
+/(vendor|system/vendor)/etc/hbtp/*                                  u:object_r:hbtp_cfg_file:s0
 
 ###################################
 # adsp files
@@ -640,80 +656,78 @@
 ###################################
 # vendor files
 #
-/vendor/package(/.*)?                      u:object_r:vendor_carrier_file:s0
-/vendor/package(/.*)?/overlay(/.*)?        u:object_r:vendor_overlay_file:s0
-/vendor/package(/.*)?/app(/.*)?            u:object_r:vendor_app_file:s0
+/(vendor|system/vendor)/package(/.*)?                               u:object_r:vendor_carrier_file:s0
+/(vendor|system/vendor)/package(/.*)?/overlay(/.*)?                 u:object_r:vendor_overlay_file:s0
+/(vendor|system/vendor)/package(/.*)?/app(/.*)?                     u:object_r:vendor_app_file:s0
 
 # same-process HAL files and their dependencies
 #
-/vendor/lib(64)?/hw/gralloc\.msm8998\.so   u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/hw/android\.hardware\.graphics\.mapper@2\.0-impl-qti-display\.so   u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/vendor\.qti\.hardware\.display\.mapper@1\.0\.so   u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libqdMetaData\.so         u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libqservice\.so           u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libqdutils\.so            u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libadreno_utils\.so       u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libgsl\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/hw/android\.hardware\.graphics\.mapper@2\.0-impl-qti-display\.so   u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/vendor\.qti\.hardware\.display\.mapper@1\.0\.so   u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libqdMetaData\.so         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libqservice\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libqdutils\.so            u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libadreno_utils\.so       u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libgsl\.so                u:object_r:same_process_hal_file:s0
 
-/vendor/lib(64)?/hw/vulkan\.msm8998\.so    u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libEGL_adreno\.so         u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libGLESv1_CM_adreno\.so   u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libGLESv2_adreno\.so      u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libEGL_adreno\.so         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libGLESv1_CM_adreno\.so   u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libGLESv2_adreno\.so      u:object_r:same_process_hal_file:s0
 
-/vendor/lib(64)?/libdrmutils\.so           u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libdrm\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libdrmutils\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libdrm\.so                u:object_r:same_process_hal_file:s0
 
-/vendor/lib(64)?/libavenhancements\.so     u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libgrallocutils\.so       u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libgralloccore\.so        u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libExtendedExtractor.so   u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libavenhancements\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libgrallocutils\.so       u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libgralloccore\.so        u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libExtendedExtractor.so   u:object_r:same_process_hal_file:s0
 # RenderScript dependencies.
 # To test: run cts -m CtsRenderscriptTestCases
-/vendor/lib(64)?/libRSDriver_adreno\.so     u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libCB\.so                  u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libllvm-qgl\.so            u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libbccQTI\.so              u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libllvm-qcom\.so           u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/librs_adreno\.so           u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/librs_adreno_sha1\.so      u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libqti-perfd-client\.so    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libRSDriver_adreno\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libCB\.so                  u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libllvm-qgl\.so            u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libbccQTI\.so              u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libllvm-qcom\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/librs_adreno\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/librs_adreno_sha1\.so      u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libqti-perfd-client\.so    u:object_r:same_process_hal_file:s0
 # perf-hal client lib (included by libqti-perfd-client.so)
-/vendor/lib(64)?/vendor\.qti\.hardware\.perf@1\.0\.so    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/vendor\.qti\.hardware\.perf@1\.0\.so    u:object_r:same_process_hal_file:s0
 
 # libGLESv2_adreno depends on this
-/vendor/lib(64)?/libllvm-glnext\.so         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libllvm-glnext\.so         u:object_r:same_process_hal_file:s0
 
 # libOpenCL and its dependencies
-/vendor/lib(64)?/libOpenCL\.so              u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libq3dtools_adreno\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libOpenCL\.so              u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libq3dtools_adreno\.so     u:object_r:same_process_hal_file:s0
 
 # hbtp dependencies
-/vendor/lib(64)?/libhbtpitsjni\.so          u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libhbtpdbgclientjni\.so    u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libhbtpjni\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libhbtpitsjni\.so          u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libhbtpdbgclientjni\.so    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libhbtpjni\.so             u:object_r:same_process_hal_file:s0
 
 #Loaded by native loader (zygote) for all processes
-/vendor/lib(64)?/libhalide_hexagon_host\.so u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libadsprpc\.so             u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libcdsprpc\.so             u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libsdsprpc\.so             u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libdiag\.so                u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libtime_genoff\.so         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libhalide_hexagon_host\.so u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libadsprpc\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libcdsprpc\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libsdsprpc\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libdiag\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libtime_genoff\.so         u:object_r:same_process_hal_file:s0
 
 # libmmi_jni
-/vendor/lib(64)?/libmmi_jni\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libmmi_jni\.so             u:object_r:same_process_hal_file:s0
 
 # Fastcv libs
-/vendor/lib(64)?/libfastcvdsp_stub\.so      u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libfastcvadsp_stub\.so     u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libfastcvopt\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libfastcvdsp_stub\.so      u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libfastcvadsp_stub\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libfastcvopt\.so           u:object_r:same_process_hal_file:s0
 
 # SVA files
-/vendor/lib(64)?/liblistenjni\.so          u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/liblistensoundmodel2\.so  u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/liblistenjni\.so          u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/liblistensoundmodel2\.so  u:object_r:same_process_hal_file:s0
 
 # libnpu
-/vendor/lib(64)?/libnpu\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/libnpu\.so                u:object_r:same_process_hal_file:s0
 ###################################
 # firmware images
 #
