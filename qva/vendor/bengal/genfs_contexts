@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Linux Foundation. All rights reserved.
+# Copyright (c) 2019, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -24,12 +24,26 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+###################################
 
-# Allow read access to mirrorlink specific property type.
-get_prop(mirrorlink, vendor_mirrorlink_prop);
+#TODO: As of lines are commented once testing is done we should be enabling
+# with actual paths .
 
-# Allow read access to udc connection state
-allow mirrorlink sysfs_usb_controller:dir r_dir_perms;
-allow mirrorlink sysfs_usb_controller:file r_file_perms;
+# Power supply device nodes
 
-hal_client_domain(mirrorlink, hal_mirrorlink)
+#qdss sysfs-node
+#genfscon sysfs /devices/platform/soc/6b05000.tmc/coresight-tmc-etf u:object_r:sysfs_qdss_dev:s0
+#genfscon sysfs /devices/platform/soc/6048000.tmc/coresight-tmc-etr u:object_r:sysfs_qdss_dev:s0
+#genfscon sysfs /devices/platform/soc/6002000.stm/coresight-stm u:object_r:sysfs_qdss_dev:s0
+genfscon sysfs /devices/platform/soc/soc:hwevent/coresight-hwevent u:object_r:sysfs_qdss_dev:s0
+#genfscon sysfs /devices/platform/soc/6b0c000.csr/coresight-swao-csr u:object_r:sysfs_qdss_dev:s0
+genfscon sysfs /devices/platform/soc/soc:dummy_source/coresight-modem-diag u:object_r:sysfs_qdss_dev:s0
+
+# PMIC UI peripherals
+
+# DCVS nodes
+
+#net sysfs
+
+#fps sysfs-node
+
