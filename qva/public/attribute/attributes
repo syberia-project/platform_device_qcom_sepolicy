@@ -65,6 +65,10 @@ attribute vendor_wifidisplayhalservice;
 attribute vendor_wifidisplayhalservice_client;
 attribute vendor_wifidisplayhalservice_server;
 
+attribute vendor_agmservice;
+attribute vendor_agmservice_client;
+attribute vendor_agmservice_server;
+
 attribute vendor_hal_vpp;
 attribute vendor_hal_vpp_client;
 attribute vendor_hal_vpp_server;
@@ -122,3 +126,11 @@ attribute vendor_qtiloopback_client;
 attribute vendor_hal_debugutils;
 attribute vendor_hal_debugutils_client;
 attribute vendor_hal_debugutils_server;
+
+attribute vendor_hal_wifimyftm;
+attribute vendor_hal_wifimyftm_client;
+attribute vendor_hal_wifimyftm_server;
+
+attribute vendor_hal_mem_pasrmanager;
+attribute vendor_hal_mem_pasrmanager_client;
+attribute vendor_hal_mem_pasrmanager_server;
